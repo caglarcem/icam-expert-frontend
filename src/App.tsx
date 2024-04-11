@@ -21,7 +21,7 @@ const App: React.FC = () => {
 
         try {
             const response = await axios.post(
-                'http://localhost:3000/upload',
+                'http://localhost:3000/api/file/upload',
                 formData,
                 {
                     headers: {
