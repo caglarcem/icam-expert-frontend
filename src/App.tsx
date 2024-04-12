@@ -1,23 +1,42 @@
 import React, { useState, ChangeEvent } from 'react';
+import {
+  Button,
+  Container,
+  Grid,
+  Typography,
+  ThemeProvider,
+  createTheme,
+} from '@mui/material';
+import CssBaseline from '@mui/material/CssBaseline';
+import { UploadOutlined as UploadIcon } from '@mui/icons-material';
 import axios from 'axios';
 
+const darkTheme = createTheme({
+  palette: {
+    mode: 'dark',
+  },
+});
+
 const App: React.FC = () => {
-  const [file, setFile] = useState<File | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      setFile(e.target.files[0]);
+    if (e.target.files) {
+      const selectedFiles = Array.from(e.target.files);
+      setFiles(selectedFiles);
     }
   };
 
   const handleUpload = async () => {
-    if (!file) {
-      alert('Please select a file.');
+    if (files.length === 0) {
+      alert('Please select one or more files.');
       return;
     }
 
     const formData = new FormData();
-    formData.append('file', file);
+    files.forEach(file => {
+      formData.append('files', file);
+    });
 
     try {
       const response = await axios.post(
@@ -30,19 +49,56 @@ const App: React.FC = () => {
         }
       );
       console.log(response.data);
-      alert('File uploaded successfully.');
+      alert('Files uploaded successfully.');
+      setFiles([]); // Clear selected files after upload
     } catch (error) {
-      console.error('Error uploading file:', error);
-      alert('Error uploading file.');
+      console.error('Error uploading files:', error);
+      alert('Error uploading files.');
     }
   };
 
   return (
-    <div className="App">
-      <h1>File Upload</h1>
-      <input type="file" onChange={handleFileChange} />
-      <button onClick={handleUpload}>Upload</button>
-    </div>
+    <ThemeProvider theme={darkTheme}>
+      <CssBaseline />
+      <Container>
+        {/* <Typography variant="h5" gutterBottom>
+          File Upload
+        </Typography> */}
+        <input
+          type="file"
+          onChange={handleFileChange}
+          multiple
+          style={{ display: 'none' }}
+          id="fileInput"
+        />
+        <label htmlFor="fileInput">
+          <Button
+            style={{ marginTop: '50px' }}
+            variant="contained"
+            component="span"
+            startIcon={<UploadIcon />}
+          >
+            Select Files
+          </Button>
+        </label>
+        <Grid container spacing={2} style={{ marginTop: '20px' }}>
+          {files.map((file, index) => (
+            <Grid item key={index}>
+              {file.name}
+            </Grid>
+          ))}
+        </Grid>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleUpload}
+          disabled={files.length === 0}
+          style={{ marginTop: '20px' }}
+        >
+          Upload
+        </Button>
+      </Container>
+    </ThemeProvider>
   );
 };
 

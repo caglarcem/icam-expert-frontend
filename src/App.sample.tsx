@@ -145,42 +145,6 @@ function App() {
     };
   }, []);
 
-  // TODO this breaks the app. This shouldn't be a use effect, but start with listening above when a button is clicked etc.
-  // useEffect(() => {
-  //     // Function to send raw audio data to server via WebSocket
-  //     const sendDataToServer = () => {
-  //         if (ws && audioStream) {
-  //             const audioChunks: Blob[] = [];
-  //             const mediaRecorder = new MediaRecorder(audioStream);
-
-  //             mediaRecorder.ondataavailable = (e) => {
-  //                 if (e.data.size > 0) {
-  //                     audioChunks.push(e.data);
-  //                 }
-  //             };
-
-  //             mediaRecorder.onstop = () => {
-  //                 const audioBlob = new Blob(audioChunks, {
-  //                     type: 'audio/wav',
-  //                 });
-  //                 ws.send(audioBlob);
-  //                 setLoading(false);
-  //             };
-
-  //             mediaRecorder.start();
-  //         }
-  //     };
-
-  //     sendDataToServer();
-
-  //     // Clean-up function to stop sending data when component unmounts
-  //     return () => {
-  //         if (audioStream) {
-  //             audioStream.getTracks().forEach((track) => track.stop());
-  //         }
-  //     };
-  // }, [ws, audioStream]);
-
   useEffect(() => {
     // Function to play the translated speech response
     setAudioUrl(audioUrl);
