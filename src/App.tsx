@@ -9,7 +9,10 @@ import {
 } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import { UploadOutlined as UploadIcon } from '@mui/icons-material';
+import Textarea from './components/common/textArea';
+
 import axios from 'axios';
+import './App.css';
 
 const darkTheme = createTheme({
   palette: {
@@ -27,6 +30,19 @@ const App: React.FC = () => {
     }
   };
 
+  const convertPdfToText = async () => {
+    try {
+      const response = await axios.get(
+        'http://localhost:3000/api/pdfToText/convert'
+      );
+      console.log(response.data);
+      alert('Pdf converted successfully');
+    } catch (error) {
+      console.error('Error converting pdf to text:', error);
+      alert('Error converting pdf to text.');
+    }
+  };
+
   const handleUpload = async () => {
     if (files.length === 0) {
       alert('Please select one or more files.');
@@ -38,9 +54,12 @@ const App: React.FC = () => {
       formData.append('files', file);
     });
 
+    // TODO change to user input
+    const queryText = 'What is the incident involve, what happened? Summarise.';
+
     try {
       const response = await axios.post(
-        'http://localhost:3000/api/file/upload',
+        `http://localhost:3000/api/queryDocuments/report?queryText=${queryText}`,
         formData,
         {
           headers: {
@@ -60,44 +79,66 @@ const App: React.FC = () => {
   return (
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
-      <Container>
-        {/* <Typography variant="h5" gutterBottom>
+      <div className="App">
+        <header className="App-header">
+          <Container>
+            {/* <Typography variant="h5" gutterBottom>
           File Upload
         </Typography> */}
-        <input
-          type="file"
-          onChange={handleFileChange}
-          multiple
-          style={{ display: 'none' }}
-          id="fileInput"
-        />
-        <label htmlFor="fileInput">
-          <Button
-            style={{ marginTop: '50px' }}
-            variant="contained"
-            component="span"
-            startIcon={<UploadIcon />}
-          >
-            Select Files
-          </Button>
-        </label>
-        <Grid container spacing={2} style={{ marginTop: '20px' }}>
-          {files.map((file, index) => (
-            <Grid item key={index}>
-              {file.name}
+            <input
+              type="file"
+              onChange={handleFileChange}
+              multiple
+              style={{ display: 'none' }}
+              id="fileInput"
+            />
+            <label htmlFor="fileInput">
+              <Button
+                style={{ marginTop: '50px' }}
+                variant="contained"
+                component="span"
+                startIcon={<UploadIcon />}
+              >
+                Select Files
+              </Button>
+            </label>
+            <Grid container spacing={2} style={{ marginTop: '20px' }}>
+              {files.map((file, index) => (
+                <Grid item key={index}>
+                  {file.name}
+                </Grid>
+              ))}
             </Grid>
-          ))}
-        </Grid>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleUpload}
-          disabled={files.length === 0}
-          style={{ marginTop: '20px' }}
-        >
-          Upload
-        </Button>
-      </Container>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleUpload}
+              disabled={files.length === 0}
+              style={{ marginTop: '20px' }}
+            >
+              Upload
+            </Button>
+            {/* <Textarea
+              placeholder="Enter query on all the selected documents..."
+              onChange={e => setQuery(e.target.value)}
+              style={{
+                marginTop: 80,
+                marginLeft: 50,
+                width: 400,
+              }}
+            /> */}
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={convertPdfToText}
+              style={{ marginTop: '20px' }}
+            >
+              Convert PDF to text
+            </Button>
+            {/* <p>{convertedText}</p> */}
+          </Container>
+        </header>
+      </div>
     </ThemeProvider>
   );
 };
