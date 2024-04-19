@@ -54,9 +54,12 @@ const App: React.FC = () => {
       formData.append('files', file);
     });
 
+    // TODO change to user input
+    const queryText = 'What is the incident involve, what happened? Summarise.';
+
     try {
       const response = await axios.post(
-        'http://localhost:3000/api/file/upload',
+        `http://localhost:3000/api/queryDocuments/report?queryText=${queryText}`,
         formData,
         {
           headers: {
