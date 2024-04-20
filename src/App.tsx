@@ -22,6 +22,7 @@ const darkTheme = createTheme({
 
 const App: React.FC = () => {
   const [files, setFiles] = useState<File[]>([]);
+  const [reportResult, setReportResult] = useState<string | null>(null);
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -30,18 +31,18 @@ const App: React.FC = () => {
     }
   };
 
-  const convertPdfToText = async () => {
-    try {
-      const response = await axios.get(
-        'http://localhost:3000/api/pdfToText/convert'
-      );
-      console.log(response.data);
-      alert('Pdf converted successfully');
-    } catch (error) {
-      console.error('Error converting pdf to text:', error);
-      alert('Error converting pdf to text.');
-    }
-  };
+  // const convertPdfToText = async () => {
+  //   try {
+  //     const response = await axios.get(
+  //       'http://localhost:3000/api/pdfToText/convert'
+  //     );
+  //     console.log(response.data);
+  //     alert('Pdf converted successfully');
+  //   } catch (error) {
+  //     console.error('Error converting pdf to text:', error);
+  //     alert('Error converting pdf to text.');
+  //   }
+  // };
 
   const handleUpload = async () => {
     if (files.length === 0) {
@@ -54,12 +55,12 @@ const App: React.FC = () => {
       formData.append('files', file);
     });
 
-    // TODO change to user input
-    const queryText = 'What is the incident involve, what happened? Summarise.';
+    const prompt =
+      'Study all the documents and report the discrepancies between what people think has happened.';
 
     try {
       const response = await axios.post(
-        `http://localhost:3000/api/queryDocuments/report?queryText=${queryText}`,
+        `http://localhost:3000/api/queryDocuments/report?prompt=${prompt}`,
         formData,
         {
           headers: {
@@ -67,8 +68,11 @@ const App: React.FC = () => {
           },
         }
       );
-      console.log(response.data);
-      alert('Files uploaded successfully.');
+
+      console.log('Response: ', response);
+
+      setReportResult(response.data);
+
       setFiles([]); // Clear selected files after upload
     } catch (error) {
       console.error('Error uploading files:', error);
@@ -116,7 +120,7 @@ const App: React.FC = () => {
               disabled={files.length === 0}
               style={{ marginTop: '20px' }}
             >
-              Upload
+              SUBMIT
             </Button>
             {/* <Textarea
               placeholder="Enter query on all the selected documents..."
@@ -127,15 +131,8 @@ const App: React.FC = () => {
                 width: 400,
               }}
             /> */}
-            <Button
-              variant="contained"
-              color="secondary"
-              onClick={convertPdfToText}
-              style={{ marginTop: '20px' }}
-            >
-              Convert PDF to text
-            </Button>
-            {/* <p>{convertedText}</p> */}
+
+            <p>{reportResult}</p>
           </Container>
         </header>
       </div>
