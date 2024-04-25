@@ -6,16 +6,17 @@ import {
   Typography,
   ThemeProvider,
   createTheme,
+  Input,
+  Stack,
+  InputLabel,
 } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
-import {
-  MarginTwoTone,
-  UploadOutlined as UploadIcon,
-} from '@mui/icons-material';
+import { UploadOutlined as UploadIcon } from '@mui/icons-material';
 import Textarea from './components/common/textArea';
 
 import axios from 'axios';
 import './App.css';
+import { display } from '@mui/system';
 
 const darkTheme = createTheme({
   palette: {
@@ -24,14 +25,14 @@ const darkTheme = createTheme({
 });
 
 const App: React.FC = () => {
-  const [files, setFiles] = useState<File[]>([]);
+  const [files, setSelectedFiles] = useState<File[]>([]);
   const [prompt, setPrompt] = useState<string>();
   const [reportResult, setReportResult] = useState<string>();
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const selectedFiles = Array.from(e.target.files);
-      setFiles(selectedFiles);
+      setSelectedFiles(selectedFiles);
 
       setReportResult(undefined);
     }
@@ -43,15 +44,23 @@ const App: React.FC = () => {
       return;
     }
 
-    const formData = new FormData();
-    files.forEach(file => {
-      formData.append('files', file);
-    });
+    if (!prompt) {
+      alert('Please enter a prompt or question.');
+      return;
+    }
+    await queryDocuments(prompt, files);
+  };
 
-    // const prompt =
-    //   'Study all the documents and report the discrepancies between what people think has happened.';
-
+  const queryDocuments = async (prompt: string, files: File[]) => {
     try {
+      const formData = new FormData();
+      files.forEach(file => {
+        formData.append('files', file);
+      });
+
+      // Sample Prompt:
+      //   'Study all the documents and report the discrepancies between what people think has happened.';
+
       const response = await axios.post(
         `http://localhost:3000/api/queryDocuments/report?prompt=${prompt}`,
         formData,
@@ -66,7 +75,7 @@ const App: React.FC = () => {
 
       setReportResult(response.data);
 
-      setFiles([]); // Clear selected files after upload
+      setSelectedFiles([]); // Clear selected files after upload
     } catch (error) {
       console.error('Error uploading files:', error);
       alert('Error uploading files.');
@@ -78,40 +87,47 @@ const App: React.FC = () => {
       <CssBaseline />
       <div className="App">
         <header className="App-header">
-          <Container>
-            <Typography
-              style={{ marginTop: '100px', fontSize: '16px' }}
-              gutterBottom
-            >
-              Please select the documents and enter your query or prompt. An
-              answer or comment will be generated based on all the information
-              in the documents holistically.
+          <Stack
+            spacing={4}
+            style={{
+              maxWidth: '800px',
+              width: '100%',
+              margin: 'auto',
+              marginTop: '10px',
+            }}
+          >
+            <Typography style={{ fontSize: '24px', marginTop: '50px' }}>
+              MINE GUARD
             </Typography>
 
-            {/* Select Files Button */}
-            <input
+            <Container>
+              <Typography style={{ fontSize: '16px' }} gutterBottom>
+                Please select the PDF documents and enter your query or prompt.
+              </Typography>
+              <Typography style={{ fontSize: '16px' }} gutterBottom>
+                An answer or comment will be generated based on all the
+                information in the documents holistically.
+              </Typography>
+            </Container>
+
+            <Input
+              id="fileInput"
+              style={{ display: 'none' }}
               type="file"
               onChange={handleFileChange}
-              multiple
-              style={{ display: 'none' }}
-              id="fileInput"
+              inputProps={{ multiple: true, accept: '.pdf' }}
             />
-            <label htmlFor="fileInput">
+            <InputLabel htmlFor="fileInput">
               <Button
-                style={{ marginTop: '20px' }}
                 variant="contained"
                 component="span"
+                startIcon={<UploadIcon />}
               >
                 Select Files
               </Button>
-            </label>
+            </InputLabel>
 
-            {/* Display Selected Files */}
-            <Grid
-              container
-              spacing={2}
-              style={{ marginTop: '20px', width: '400px' }}
-            >
+            <Grid container spacing={2} style={{ width: '400px' }}>
               {files.map((file, index) => (
                 <Grid item key={index}>
                   {file.name}
@@ -119,35 +135,24 @@ const App: React.FC = () => {
               ))}
             </Grid>
 
-            {/* Prompt Input */}
-            <div
-              style={{
-                marginTop: '20px',
-                marginLeft: '33%',
-                width: '100%',
-                maxWidth: '400px',
-              }}
-            >
-              <Textarea
-                placeholder="Enter a prompt or query on all the selected documents..."
-                onChange={e => setPrompt(e.target.value)}
-                style={{ width: '100%', marginBottom: '10px' }}
-              />
-              {/* Submit Button */}
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleUpload}
-                disabled={files.length === 0}
-                style={{ width: '100%' }} // Make the button width 100%
-              >
-                SUBMIT
-              </Button>
-            </div>
+            <Textarea
+              placeholder="Enter a prompt or query on all the selected documents..."
+              onChange={e => setPrompt(e.target.value)}
+              style={{ width: '100%', marginBottom: '10px' }}
+            />
 
-            {/* Display Report Result */}
-            <p style={{ marginTop: '20px' }}>{reportResult}</p>
-          </Container>
+            <Button
+              variant="contained"
+              color="secondary"
+              component="span"
+              style={{ width: 'fit-content', margin: '10px auto' }}
+              onClick={handleUpload}
+              disabled={files.length === 0}
+            >
+              SUBMIT
+            </Button>
+            <Typography>{reportResult}</Typography>
+          </Stack>
         </header>
       </div>
     </ThemeProvider>
