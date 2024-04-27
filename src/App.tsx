@@ -1,4 +1,5 @@
 import React, { useState, ChangeEvent } from 'react';
+import axios from 'axios';
 import {
   Button,
   Container,
@@ -12,11 +13,11 @@ import {
 } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import { UploadOutlined as UploadIcon } from '@mui/icons-material';
-import Textarea from './components/common/textArea';
+import { Box } from '@mui/system';
 
-import axios from 'axios';
 import './App.css';
-import { display } from '@mui/system';
+import Textarea from './components/common/textArea';
+import IcamExpertImage from './images/security-guard.avif';
 
 const darkTheme = createTheme({
   palette: {
@@ -38,7 +39,7 @@ const App: React.FC = () => {
     }
   };
 
-  const handleUpload = async () => {
+  const handleSubmit = async () => {
     if (files.length === 0) {
       alert('Please select one or more files.');
       return;
@@ -74,8 +75,6 @@ const App: React.FC = () => {
       console.log('Response: ', response);
 
       setReportResult(response.data);
-
-      setSelectedFiles([]); // Clear selected files after upload
     } catch (error) {
       console.error('Error uploading files:', error);
       alert('Error uploading files.');
@@ -96,8 +95,15 @@ const App: React.FC = () => {
               marginTop: '10px',
             }}
           >
-            <Typography style={{ fontSize: '24px', marginTop: '50px' }}>
-              MINE GUARD
+            <Typography
+              style={{
+                fontSize: '24px',
+                marginTop: '50px',
+                color: '#F9BF90',
+                fontWeight: '400',
+              }}
+            >
+              ICAM Expert
             </Typography>
 
             <Container>
@@ -127,26 +133,26 @@ const App: React.FC = () => {
               </Button>
             </InputLabel>
 
-            <Grid container spacing={2} style={{ width: '400px' }}>
+            <Box style={{ display: 'flex', color: '#90caf9' }}>
               {files.map((file, index) => (
-                <Grid item key={index}>
+                <Grid item key={index} style={{ marginRight: '16px' }}>
                   {file.name}
                 </Grid>
               ))}
-            </Grid>
+            </Box>
 
             <Textarea
               placeholder="Enter a prompt or query on all the selected documents..."
               onChange={e => setPrompt(e.target.value)}
-              style={{ width: '100%', marginBottom: '10px' }}
+              style={{ width: '100%', marginTop: '80px' }}
             />
 
             <Button
               variant="contained"
               color="secondary"
               component="span"
-              style={{ width: 'fit-content', margin: '10px auto' }}
-              onClick={handleUpload}
+              style={{ width: 'fit-content', margin: '40px auto' }}
+              onClick={handleSubmit}
               disabled={files.length === 0}
             >
               SUBMIT
