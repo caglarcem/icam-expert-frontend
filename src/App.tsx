@@ -1,4 +1,5 @@
 import React, { useState, ChangeEvent } from 'react';
+import axios from 'axios';
 import {
   Button,
   Container,
@@ -6,13 +7,17 @@ import {
   Typography,
   ThemeProvider,
   createTheme,
+  Input,
+  Stack,
+  InputLabel,
 } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import { UploadOutlined as UploadIcon } from '@mui/icons-material';
-import Textarea from './components/common/textArea';
+import { Box } from '@mui/system';
 
-import axios from 'axios';
 import './App.css';
+import Textarea from './components/common/textArea';
+import IcamExpertImage from './images/security-guard.avif';
 
 const darkTheme = createTheme({
   palette: {
@@ -21,44 +26,42 @@ const darkTheme = createTheme({
 });
 
 const App: React.FC = () => {
-  const [files, setFiles] = useState<File[]>([]);
-  const [reportResult, setReportResult] = useState<string | null>(null);
+  const [files, setSelectedFiles] = useState<File[]>([]);
+  const [prompt, setPrompt] = useState<string>();
+  const [reportResult, setReportResult] = useState<string>();
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const selectedFiles = Array.from(e.target.files);
-      setFiles(selectedFiles);
+      setSelectedFiles(selectedFiles);
+
+      setReportResult(undefined);
     }
   };
 
-  // const convertPdfToText = async () => {
-  //   try {
-  //     const response = await axios.get(
-  //       'http://localhost:3000/api/pdfToText/convert'
-  //     );
-  //     console.log(response.data);
-  //     alert('Pdf converted successfully');
-  //   } catch (error) {
-  //     console.error('Error converting pdf to text:', error);
-  //     alert('Error converting pdf to text.');
-  //   }
-  // };
-
-  const handleUpload = async () => {
+  const handleSubmit = async () => {
     if (files.length === 0) {
       alert('Please select one or more files.');
       return;
     }
 
-    const formData = new FormData();
-    files.forEach(file => {
-      formData.append('files', file);
-    });
+    if (!prompt) {
+      alert('Please enter a prompt or question.');
+      return;
+    }
+    await queryDocuments(prompt, files);
+  };
 
-    const prompt =
-      'Study all the documents and report the discrepancies between what people think has happened.';
-
+  const queryDocuments = async (prompt: string, files: File[]) => {
     try {
+      const formData = new FormData();
+      files.forEach(file => {
+        formData.append('files', file);
+      });
+
+      // Sample Prompt:
+      //   'Study all the documents and report the discrepancies between what people think has happened.';
+
       const response = await axios.post(
         `http://localhost:3000/api/queryDocuments/report?prompt=${prompt}`,
         formData,
@@ -72,8 +75,6 @@ const App: React.FC = () => {
       console.log('Response: ', response);
 
       setReportResult(response.data);
-
-      setFiles([]); // Clear selected files after upload
     } catch (error) {
       console.error('Error uploading files:', error);
       alert('Error uploading files.');
@@ -85,55 +86,79 @@ const App: React.FC = () => {
       <CssBaseline />
       <div className="App">
         <header className="App-header">
-          <Container>
-            {/* <Typography variant="h5" gutterBottom>
-          File Upload
-        </Typography> */}
-            <input
+          <Stack
+            spacing={4}
+            style={{
+              maxWidth: '800px',
+              width: '100%',
+              margin: 'auto',
+              marginTop: '10px',
+            }}
+          >
+            <Typography
+              style={{
+                fontSize: '24px',
+                marginTop: '50px',
+                color: '#F9BF90',
+                fontWeight: '400',
+              }}
+            >
+              ICAM Expert
+            </Typography>
+
+            <Container>
+              <Typography style={{ fontSize: '16px' }} gutterBottom>
+                Please select the PDF documents and enter your query or prompt.
+              </Typography>
+              <Typography style={{ fontSize: '16px' }} gutterBottom>
+                An answer or comment will be generated based on all the
+                information in the documents holistically.
+              </Typography>
+            </Container>
+
+            <Input
+              id="fileInput"
+              style={{ display: 'none' }}
               type="file"
               onChange={handleFileChange}
-              multiple
-              style={{ display: 'none' }}
-              id="fileInput"
+              inputProps={{ multiple: true, accept: '.pdf' }}
             />
-            <label htmlFor="fileInput">
+            <InputLabel htmlFor="fileInput">
               <Button
-                style={{ marginTop: '50px' }}
                 variant="contained"
                 component="span"
                 startIcon={<UploadIcon />}
               >
                 Select Files
               </Button>
-            </label>
-            <Grid container spacing={2} style={{ marginTop: '20px' }}>
+            </InputLabel>
+
+            <Box style={{ display: 'flex', color: '#90caf9' }}>
               {files.map((file, index) => (
-                <Grid item key={index}>
+                <Grid item key={index} style={{ marginRight: '16px' }}>
                   {file.name}
                 </Grid>
               ))}
-            </Grid>
+            </Box>
+
+            <Textarea
+              placeholder="Enter a prompt or query on all the selected documents..."
+              onChange={e => setPrompt(e.target.value)}
+              style={{ width: '100%', marginTop: '80px' }}
+            />
+
             <Button
               variant="contained"
-              color="primary"
-              onClick={handleUpload}
+              color="secondary"
+              component="span"
+              style={{ width: 'fit-content', margin: '40px auto' }}
+              onClick={handleSubmit}
               disabled={files.length === 0}
-              style={{ marginTop: '20px' }}
             >
               SUBMIT
             </Button>
-            {/* <Textarea
-              placeholder="Enter query on all the selected documents..."
-              onChange={e => setQuery(e.target.value)}
-              style={{
-                marginTop: 80,
-                marginLeft: 50,
-                width: 400,
-              }}
-            /> */}
-
-            <p>{reportResult}</p>
-          </Container>
+            <Typography>{reportResult}</Typography>
+          </Stack>
         </header>
       </div>
     </ThemeProvider>
