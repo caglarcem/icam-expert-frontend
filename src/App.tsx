@@ -17,7 +17,6 @@ import { Box } from '@mui/system';
 
 import './App.css';
 import Textarea from './components/common/textArea';
-import IcamExpertImage from './images/security-guard.avif';
 
 const darkTheme = createTheme({
   palette: {
