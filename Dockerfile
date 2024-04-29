@@ -4,20 +4,17 @@ FROM node:22-alpine as build
 # Set the working directory inside the container
 WORKDIR /app
 
-# Copy package.json and pnpm-lock.yaml to the working directory
-COPY package.json pnpm-lock.yaml ./
+# Copy package.json and package-lock.json to the working directory
+COPY package.json package-lock.json ./
 
-# Install PNPM globally
-RUN npm install -g pnpm
-
-# Install application dependencies using PNPM
-RUN pnpm install
+# Install application dependencies using npm
+RUN npm install
 
 # Copy the rest of the application code to the working directory
 COPY . .
 
 # Build the React app
-RUN pnpm run build
+RUN npm run build
 
 # Stage 2: Serve the built React app using a simple Node.js server
 FROM node:22-alpine
