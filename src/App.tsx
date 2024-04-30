@@ -10,6 +10,7 @@ import {
   Input,
   Stack,
   InputLabel,
+  CircularProgress,
 } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import { UploadOutlined as UploadIcon } from '@mui/icons-material';
@@ -17,7 +18,6 @@ import { Box } from '@mui/system';
 
 import './App.css';
 import Textarea from './components/common/textArea';
-import IcamExpertImage from './images/security-guard.avif';
 
 const darkTheme = createTheme({
   palette: {
@@ -29,6 +29,7 @@ const App: React.FC = () => {
   const [files, setSelectedFiles] = useState<File[]>([]);
   const [prompt, setPrompt] = useState<string>();
   const [reportResult, setReportResult] = useState<string>();
+  const [loading, setLoading] = useState<boolean>(false); // Added loading state
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -49,7 +50,14 @@ const App: React.FC = () => {
       alert('Please enter a prompt or question.');
       return;
     }
-    await queryDocuments(prompt, files);
+
+    setLoading(true); // Set loading state to true
+
+    try {
+      await queryDocuments(prompt, files);
+    } finally {
+      setLoading(false); // Reset loading state whether success or error
+    }
   };
 
   const queryDocuments = async (prompt: string, files: File[]) => {
@@ -153,10 +161,17 @@ const App: React.FC = () => {
               component="span"
               style={{ width: 'fit-content', margin: '40px auto' }}
               onClick={handleSubmit}
-              disabled={files.length === 0}
+              disabled={files.length === 0 || loading}
             >
               SUBMIT
             </Button>
+
+            {loading && (
+              <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <CircularProgress color="secondary" />
+              </div>
+            )}
+
             <Typography>{reportResult}</Typography>
           </Stack>
         </header>
