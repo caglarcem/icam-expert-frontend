@@ -17,6 +17,8 @@
     "@types/react": "^18.2.74",
     "@types/react-dom": "^18.2.24",
     "axios": "^1.6.8",
+    "jest-environment-jsdom": "^29.7.0",
+    "jsdom": "^24.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.51.3",
@@ -28,7 +30,7 @@
   "scripts": {
     "start": "PORT=8000 react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "jest",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -50,10 +52,13 @@
     ]
   },
   "devDependencies": {
+    "@babel/preset-typescript": "^7.24.1",
     "@testing-library/jest-dom": "^4.2.4",
     "@types/jest": "^29.5.12",
     "@types/testing-library__jest-dom": "^6.0.0",
     "eslint": "^8.57.0",
-    "eslint-plugin-react": "^7.34.1"
+    "eslint-plugin-react": "^7.34.1",
+    "ts-jest": "^29.1.2",
+    "ts-node": "^10.9.2"
   }
 }
