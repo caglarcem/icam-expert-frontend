@@ -67,7 +67,7 @@ const App: React.FC = () => {
         formData.append('files', file);
       });
 
-      // Sample Prompt: // 2
+      // Sample Prompt: // 3
       //   'Study all the documents and report the discrepancies between what people think has happened.';
 
       const response = await axios.post(
