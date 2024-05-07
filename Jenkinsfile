@@ -23,13 +23,14 @@ pipeline {
             }
         }
 				stage('Docker build') {
-					steps {
-						def dockerHome = tool 'MyDocker'
-						env.PATH = "${dockerHome}/bin:${env.PATH}"
-						
-						sh 'docker build -t $DOCKER_IMAGE_NAME .'
-					}
-				}
+            environment {
+                DOCKER_HOME = tool 'MyDocker'
+                PATH = "${DOCKER_HOME}/bin:${env.PATH}"
+            }
+            steps {
+                sh 'docker build -t $DOCKER_IMAGE_NAME .'
+            }
+        }
         stage('Tag Docker Image') {
             steps {
                 sh 'docker tag $DOCKER_IMAGE_NAME:$DOCKER_IMAGE_TAG $DOCKER_IMAGE_NAME:$DOCKER_IMAGE_TAG'
