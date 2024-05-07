@@ -1,9 +1,13 @@
 pipeline {
     agent any
     environment {
+				NODEJS_VERSION = '22.1.0' 
         DOCKER_COMPOSE_VERSION = '2.27.0'
         DOCKER_IMAGE_NAME = 'caglarcem/icam-frontend'
         DOCKER_IMAGE_TAG = 'latest'
+    }
+		tools {
+        nodejs "${NODEJS_VERSION}"
     }
     stages {
         stage('Checkout') {
