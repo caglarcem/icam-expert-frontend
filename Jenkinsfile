@@ -15,14 +15,19 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/caglarcem/icam-expert-frontend.git'
             }
         }
-        stage('Build, Test, and Docker Image') {
+        stage('Build and Test') {
             steps {
                 sh 'npm install'
                 sh 'npm test'
                 sh 'npm run build'
-                sh 'docker build -t $DOCKER_IMAGE_NAME .'
             }
         }
+				stage('Docker build') {
+					def dockerHome = tool 'MyDocker'
+        	env.PATH = "${dockerHome}/bin:${env.PATH}"
+					
+					sh 'docker build -t $DOCKER_IMAGE_NAME .'
+				}
         stage('Tag Docker Image') {
             steps {
                 sh 'docker tag $DOCKER_IMAGE_NAME:$DOCKER_IMAGE_TAG $DOCKER_IMAGE_NAME:$DOCKER_IMAGE_TAG'
