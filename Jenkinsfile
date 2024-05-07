@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/caglarcem/icam-expert-frontend.git'
+                git branch: 'main', url: 'https://github.com/caglarcem/icam-expert-frontend.git'
             }
         }
         stage('Build, Test, and Docker Image') {
