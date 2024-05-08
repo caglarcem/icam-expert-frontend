@@ -30,8 +30,8 @@ pipeline {
                 PATH = "${DOCKER_HOME}/bin:${env.PATH}"
             }
             steps {
-								sh 'print "cem"'
-								sh 'print ${PATH}'
+								echo "cem"
+								echo ${PATH}
 								sh 'docker build ${DOCKER_IMAGE_NAME}'
             }
         }
