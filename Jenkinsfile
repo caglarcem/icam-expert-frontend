@@ -31,7 +31,7 @@ pipeline {
             }
             steps {
 								echo PATH
-								sh 'docker build ${DOCKER_IMAGE_NAME}'
+								sh 'docker build .'
             }
         }
         stage('Tag Docker Image') {
