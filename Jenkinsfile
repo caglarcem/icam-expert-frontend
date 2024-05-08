@@ -29,9 +29,7 @@ pipeline {
                 PATH = "${DOCKER_HOME}/bin:${env.PATH}"
             }
             steps {
-                script {
-                    docker.build("${DOCKER_IMAGE_NAME}")
-                }
+								sh 'docker build ${DOCKER_IMAGE_NAME}'
             }
         }
         stage('Tag Docker Image') {
