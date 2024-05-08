@@ -29,6 +29,7 @@ pipeline {
                 PATH = "${DOCKER_HOME}/bin:${env.PATH}"
             }
             steps {
+								sh 'docker ps'
 								sh 'docker build ${DOCKER_IMAGE_NAME}'
             }
         }
