@@ -23,6 +23,7 @@ pipeline {
             }
         }
 				stage('Docker build') {
+						agent any
             environment {
                 DOCKER_HOME = tool 'MyDocker'
                 PATH = "${DOCKER_HOME}/bin:${env.PATH}"
