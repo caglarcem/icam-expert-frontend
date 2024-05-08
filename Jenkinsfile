@@ -31,7 +31,7 @@ pipeline {
             }
             steps {
 								echo "cem"
-								echo ${PATH}
+								echo PATH
 								sh 'docker build ${DOCKER_IMAGE_NAME}'
             }
         }
