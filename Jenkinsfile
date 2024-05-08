@@ -30,9 +30,8 @@ pipeline {
                 PATH = "${DOCKER_HOME}/bin:${env.PATH}"
             }
             steps {
-								echo "cem"
 								echo PATH
-								sh 'docker build ${DOCKER_IMAGE_NAME}'
+								sh 'docker build . -t ${DOCKER_IMAGE_NAME}'
             }
         }
         stage('Tag Docker Image') {
