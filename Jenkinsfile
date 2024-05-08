@@ -19,7 +19,8 @@ pipeline {
             steps {
                 sh 'npm install'
                 sh 'npm test'
-                sh 'npm run build'
+								// TODO enable once the test is complete
+                //sh 'npm run build'
             }
         }
 				stage('Docker build') {
@@ -29,7 +30,8 @@ pipeline {
                 PATH = "${DOCKER_HOME}/bin:${env.PATH}"
             }
             steps {
-								sh 'docker ps'
+								sh 'print "cem"'
+								sh 'print ${PATH}'
 								sh 'docker build ${DOCKER_IMAGE_NAME}'
             }
         }
