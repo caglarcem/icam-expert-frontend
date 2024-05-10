@@ -50,6 +50,6 @@ workflows:
       - build-node:
           requires:
             - test-node
-    - build-docker:
+      - build-docker:
           requires:
             - build-node
