@@ -5,6 +5,7 @@ pipeline {
         DOCKER_COMPOSE_VERSION = '2.27.0'
         DOCKER_IMAGE_NAME = 'caglarcem/icam-frontend'
         DOCKER_IMAGE_TAG = 'latest'
+				// TODO this is a proxy to enable access to the docker daemon. Needed because MacOS, not needed on a linux
 				DOCKER_HOST = "tcp://172.17.0.4:2375"
     }
 		tools {
@@ -20,8 +21,7 @@ pipeline {
             steps {
                 sh 'npm install'
                 sh 'npm test'
-								// TODO enable once the test is complete
-                //sh 'npm run build'
+                sh 'npm run build'
             }
         }
 				stage('Docker build') {

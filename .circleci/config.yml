@@ -33,18 +33,32 @@ jobs:
       - store_artifacts:
           path: ~/artifacts
           destination: node-build
-  deploy:
-    # This is an example deploy job, not actually used by the workflow
+  build-push-docker:
     docker:
-      - image: cimg/base:stable
+      - image: cimg/base:2024.05
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
     steps:
-      # Replace this with steps to deploy to users
+      - checkout
+      - setup_remote_docker
+      - restore_cache:
+          keys:
+            - v1-{{ .Branch }}
+          paths:
+            - /caches/app.tar
       - run:
-          name: deploy
-          command: '#e.g. ./deploy.sh'
+          name: Load Docker image layer cache
+          command: |
+            set +o pipefail
+            docker load -i /caches/app.tar | true
       - run:
-          name: found jenkins config
-          command: ':'
+          name: Build and Push application Docker image
+          command: |
+            TAG=0.1.$CIRCLE_BUILD_NUM
+            docker build -t $DOCKERHUB_USERNAME/icam-expert-frontend:$TAG .
+            echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_USERNAME --password-stdin
+            docker push $DOCKERHUB_USERNAME/icam-expert-frontend:$TAG
 workflows:
   build-and-test:
     jobs:
@@ -52,6 +66,10 @@ workflows:
       - build-node:
           requires:
             - test-node
-    # - deploy:
-    #     requires:
-    #       - build-node
+      - build-push-docker:
+          requires:
+            - build-node
+          filters:
+            branches:
+              only:
+                - main
