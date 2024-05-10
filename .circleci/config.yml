@@ -49,9 +49,6 @@ jobs:
             docker build -t $DOCKERHUB_USERNAME/icam-expert-frontend:$TAG .
             echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_USERNAME --password-stdin
             docker push $DOCKERHUB_USERNAME/icam-expert-frontend:$TAG
-    when:
-      condition: equal
-      branch: main
 workflows:
   build-and-test:
     jobs:
@@ -62,3 +59,7 @@ workflows:
       - build-push-docker:
           requires:
             - build-node
+          filters:
+            branches:
+              only:
+                - main
