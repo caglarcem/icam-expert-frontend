@@ -5,6 +5,7 @@ pipeline {
         DOCKER_COMPOSE_VERSION = '2.27.0'
         DOCKER_IMAGE_NAME = 'caglarcem/icam-frontend'
         DOCKER_IMAGE_TAG = 'latest'
+				DOCKER_HOST = "tcp://172.17.0.4:2375"
     }
 		tools {
         nodejs "${NODEJS_VERSION}"
@@ -31,7 +32,7 @@ pipeline {
             }
             steps {
 								echo PATH
-								sh 'docker build .'
+								sh 'docker build -t ${DOCKER_IMAGE_NAME} .'
             }
         }
         stage('Tag Docker Image') {
