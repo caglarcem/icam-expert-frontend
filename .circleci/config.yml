@@ -56,9 +56,9 @@ workflows:
       - build-node:
           requires:
             - test-node
-      - build-docker:
-          requires:
-            - build-node
+      #- build-docker:
+      #    requires:
+      #      - build-node
     # - deploy:
     #     requires:
     #       - build-node
