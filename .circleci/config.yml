@@ -33,15 +33,25 @@ jobs:
       - store_artifacts:
           path: ~/artifacts
           destination: node-build
-  build-docker:
+  build-push-docker:
     docker:
       - image: cimg/base:2024.05
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
     steps:
       - checkout
       - setup_remote_docker
       - run:
-          name: Build Docker image
-          command: docker build -t caglarcem/icam-expert-frontend .
+          name: Build and Push application Docker image
+          command: |
+            TAG=0.1.$CIRCLE_BUILD_NUM
+            docker build -t $DOCKERHUB_USERNAME/icam-expert-frontend:$TAG .
+            echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_USERNAME --password-stdin
+            docker push $DOCKERHUB_USERNAME/icam-expert-frontend:$TAG
+      # - run:
+      #     name: Build Docker image
+      #     command: docker build -t caglarcem/icam-expert-frontend .
 workflows:
   build-and-test:
     jobs:
@@ -49,6 +59,6 @@ workflows:
       - build-node:
           requires:
             - test-node
-      - build-docker:
+      - build-push-docker:
           requires:
             - build-node
