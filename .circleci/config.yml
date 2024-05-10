@@ -14,6 +14,9 @@ jobs:
       - run:
           name: Run tests
           command: npm test --passWithNoTests
+      - run:
+          name: Build
+          command: npm build
   build-node:
     # Build node project
     executor: node/default
@@ -33,10 +36,6 @@ jobs:
       - store_artifacts:
           path: ~/artifacts
           destination: node-build
-  build:
-    # Build docker
-    docker:
-      - image: caglarcem/icam-expert-frontend
   deploy:
     # This is an example deploy job, not actually used by the workflow
     docker:
@@ -56,9 +55,6 @@ workflows:
       - build-node:
           requires:
             - test-node
-      #- build-docker:
-      #    requires:
-      #      - build-node
     # - deploy:
     #     requires:
     #       - build-node
